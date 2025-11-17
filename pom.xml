@@ -79,6 +79,14 @@
         </dependency>
         <!-- POSTGRESQL -->
 
+        <!-- MAIL -->
+        <dependency>
+            <groupId>javax.mail</groupId>
+            <artifactId>mail</artifactId>
+            <version>1.4.7</version>
+        </dependency>
+        <!-- MAIL -->
+
         <!-- UNIT TESTS -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
