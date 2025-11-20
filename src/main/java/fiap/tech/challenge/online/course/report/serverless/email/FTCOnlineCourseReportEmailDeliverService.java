@@ -11,11 +11,6 @@ import java.util.Properties;
 
 public class FTCOnlineCourseReportEmailDeliverService {
 
-    // CONTINUAR:
-    // (V) TROCAR EMAIL DE ENVIO, UMA VEZ QUE ADMIN FIAP IMPEDE ENVIOS (SALVAR SENHA EM VAULT/VARIÁVEL DE AMBIENTE) -> UTILIZAR https://mailtrap.io/ [CRIAR CONTA UTILIZANDO GitHub]
-    // () ADICIONAR CONFIGS DE EMAIL EM VARIÁVEIS DE AMBIENTE/VAULT
-    // () CONFIGURAR CHAMADA PARA ESTE LAMBDA EM ftc-online-course-feedback-receiver-serverless PARA FEEDBACKS URGENTES
-    // () TESTAR FLUXO COMPLETO -> BUSCA DE FEEDBACK, ENVIA EMAIL E CADASTRO EM t_urgent_email_notification
     public void sendEmailUrgentFeedback(FeedbackReportRequest feedbackReportRequest, FeedbackReportResponse feedbackReportResponse) {
         EmailConfig emailConfig = new EmailConfig();
         try {
