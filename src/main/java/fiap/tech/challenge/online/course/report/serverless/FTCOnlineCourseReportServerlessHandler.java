@@ -9,8 +9,8 @@ import fiap.tech.challenge.online.course.report.serverless.dao.FTCOnlineCourseRe
 import fiap.tech.challenge.online.course.report.serverless.email.FTCOnlineCourseReportEmailDeliverService;
 import fiap.tech.challenge.online.course.report.serverless.loader.ApplicationPropertiesLoader;
 import fiap.tech.challenge.online.course.report.serverless.payload.FeedbackReportRequest;
-import fiap.tech.challenge.online.course.report.serverless.payload.HttpObjectMapper;
 import fiap.tech.challenge.online.course.report.serverless.payload.FeedbackReportResponse;
+import fiap.tech.challenge.online.course.report.serverless.payload.HttpObjectMapper;
 import fiap.tech.challenge.online.course.report.serverless.payload.error.ErrorResponse;
 import fiap.tech.challenge.online.course.report.serverless.payload.error.InvalidParameterErrorResponse;
 
@@ -24,9 +24,14 @@ public class FTCOnlineCourseReportServerlessHandler implements RequestHandler<AP
     private static final FTCOnlineCourseReportEmailDeliverService ftcOnlineCourseReportEmailDeliverService;
 
     static {
-        applicationProperties = ApplicationPropertiesLoader.loadProperties();
-        ftcOnlineCourseReportServerlessDAO = new FTCOnlineCourseReportServerlessDAO(applicationProperties);
-        ftcOnlineCourseReportEmailDeliverService = new FTCOnlineCourseReportEmailDeliverService(applicationProperties);
+        try {
+            applicationProperties = ApplicationPropertiesLoader.loadProperties();
+            ftcOnlineCourseReportServerlessDAO = new FTCOnlineCourseReportServerlessDAO(applicationProperties);
+            ftcOnlineCourseReportEmailDeliverService = new FTCOnlineCourseReportEmailDeliverService(applicationProperties);
+        } catch (Exception ex) {
+            System.err.println("Erro de inicialização de dependências Lambda: Message: " + ex.getMessage() + " - Cause: " + ex.getCause());
+            throw new ExceptionInInitializerError(ex);
+        }
     }
 
     @Override
