@@ -1,7 +1,5 @@
 package fiap.tech.challenge.online.course.report.serverless.config;
 
-import fiap.tech.challenge.online.course.report.serverless.loader.ApplicationPropertiesLoader;
-
 import java.util.Properties;
 
 public class EmailConfig {
@@ -15,8 +13,7 @@ public class EmailConfig {
     private final boolean starttlsEnable;
     private final String sslProtocol;
 
-    public EmailConfig() {
-        Properties applicationProperties = ApplicationPropertiesLoader.loadProperties(getClass().getClassLoader());
+    public EmailConfig(Properties applicationProperties) {
         this.host = applicationProperties.getProperty("application.mail.host");
         this.port = Integer.parseInt(applicationProperties.getProperty("application.mail.port"));
         this.sender = applicationProperties.getProperty("application.mail.sender");
