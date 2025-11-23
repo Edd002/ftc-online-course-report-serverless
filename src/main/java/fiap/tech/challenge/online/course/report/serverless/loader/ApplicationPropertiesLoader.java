@@ -1,17 +1,15 @@
 package fiap.tech.challenge.online.course.report.serverless.loader;
 
-import com.amazonaws.services.kms.AWSKMS;
-import com.amazonaws.services.kms.AWSKMSClientBuilder;
-import com.amazonaws.services.kms.model.DecryptRequest;
-import com.amazonaws.util.Base64;
 import io.github.cdimascio.dotenv.Dotenv;
+import software.amazon.awssdk.core.SdkBytes;
+import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.kms.KmsClient;
+import software.amazon.awssdk.services.kms.model.DecryptRequest;
+import software.amazon.awssdk.services.kms.model.DecryptResponse;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.ByteBuffer;
-import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Base64;
 import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -47,12 +45,12 @@ public class ApplicationPropertiesLoader {
     }
 
     private static String decryptAWSEnvironmentKey(String envVarName) {
-        byte[] encryptedKey = Base64.decode(System.getenv(envVarName));
-        Map<String, String> encryptionContext = new HashMap<>();
-        encryptionContext.put("LambdaFunctionName", System.getenv("AWS_LAMBDA_FUNCTION_NAME"));
-        AWSKMS client = AWSKMSClientBuilder.defaultClient();
-        DecryptRequest request = new DecryptRequest().withCiphertextBlob(ByteBuffer.wrap(encryptedKey)).withEncryptionContext(encryptionContext);
-        ByteBuffer plainTextKey = client.decrypt(request).getPlaintext();
-        return new String(plainTextKey.array(), StandardCharsets.UTF_8);
+        DecryptResponse decryptResponse;
+        try (KmsClient kmsClient = KmsClient.builder().region(Region.US_EAST_2).build()) {
+            byte[] ciphertextBlob = Base64.getDecoder().decode(envVarName);
+            DecryptRequest decryptRequest = DecryptRequest.builder().ciphertextBlob(SdkBytes.fromByteArray(ciphertextBlob)).build();
+            decryptResponse = kmsClient.decrypt(decryptRequest);
+        }
+        return new String(decryptResponse.plaintext().asByteArray());
     }
 }
