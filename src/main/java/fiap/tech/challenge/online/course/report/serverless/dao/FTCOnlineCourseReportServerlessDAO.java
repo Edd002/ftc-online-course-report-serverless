@@ -12,8 +12,8 @@ public class FTCOnlineCourseReportServerlessDAO {
 
     private final Connection connection;
 
-    public FTCOnlineCourseReportServerlessDAO() {
-        DataSourceConfig dataSourceConfig = new DataSourceConfig();
+    public FTCOnlineCourseReportServerlessDAO(Properties applicationProperties) {
+        DataSourceConfig dataSourceConfig = new DataSourceConfig(applicationProperties);
         try {
             Class.forName("org.postgresql.Driver");
             connection = DriverManager.getConnection(dataSourceConfig.getJdbcUrl(), dataSourceConfig.getUsername(), dataSourceConfig.getPassword());
