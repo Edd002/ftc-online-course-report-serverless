@@ -19,11 +19,12 @@ import java.util.Properties;
 
 public class FTCOnlineCourseReportServerlessHandler implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
 
-    private static final Properties applicationProperties;
-    private static final FTCOnlineCourseReportServerlessDAO ftcOnlineCourseReportServerlessDAO;
-    private static final FTCOnlineCourseReportEmailDeliverService ftcOnlineCourseReportEmailDeliverService;
+    private static /*final*/ Properties applicationProperties;
+    private static /*final*/ FTCOnlineCourseReportServerlessDAO ftcOnlineCourseReportServerlessDAO;
+    private static /*final*/ FTCOnlineCourseReportEmailDeliverService ftcOnlineCourseReportEmailDeliverService;
 
     static {
+        /*
         try {
             applicationProperties = ApplicationPropertiesLoader.loadProperties();
             ftcOnlineCourseReportServerlessDAO = new FTCOnlineCourseReportServerlessDAO(applicationProperties);
@@ -32,6 +33,7 @@ public class FTCOnlineCourseReportServerlessHandler implements RequestHandler<AP
             System.err.println("Erro de inicialização de dependências Lambda: Message: " + ex.getMessage() + " - Cause: " + ex.getCause());
             throw new ExceptionInInitializerError(ex);
         }
+        */
     }
 
     @Override
@@ -42,6 +44,10 @@ public class FTCOnlineCourseReportServerlessHandler implements RequestHandler<AP
             return buildInvalidParameterErrorResponse(new RuntimeException("O payload para envio de e-mail de feedback urgente não foi informado corretamente."));
         }
         try {
+            applicationProperties = ApplicationPropertiesLoader.loadProperties();
+            ftcOnlineCourseReportServerlessDAO = new FTCOnlineCourseReportServerlessDAO(applicationProperties);
+            ftcOnlineCourseReportEmailDeliverService = new FTCOnlineCourseReportEmailDeliverService(applicationProperties);
+
             context.getLogger().log("Requisição recebida em FTC Online Course Report - hashIdFeedback: " + feedbackReportRequest.hashIdFeedback(), LogLevel.INFO);
             validateAPIGatewayProxyRequestEvent(feedbackReportRequest);
             FeedbackReportResponse feedbackReportResponse = ftcOnlineCourseReportServerlessDAO.getFeedbackReportByHashId(feedbackReportRequest);
