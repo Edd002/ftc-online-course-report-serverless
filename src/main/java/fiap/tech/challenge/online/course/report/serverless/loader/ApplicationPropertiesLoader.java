@@ -31,7 +31,7 @@ public class ApplicationPropertiesLoader {
             StringBuilder sb = new StringBuilder();
             while (matcher.find()) {
                 String envVarName =  matcher.group(1);
-                String envVarValue = System.getenv(envVarName) != null ? decryptAWSEnvironmentKey(envVarName) : Dotenv.load().get(envVarName);
+                String envVarValue = System.getenv(envVarName) != null ? decryptAWSEnvironmentKey(System.getenv(envVarName)) : Dotenv.load().get(envVarName);
                 if (envVarValue != null) {
                     matcher.appendReplacement(sb, Matcher.quoteReplacement(envVarValue));
                 } else {
@@ -45,10 +45,10 @@ public class ApplicationPropertiesLoader {
         return properties;
     }
 
-    private static String decryptAWSEnvironmentKey(String envVarName) {
+    private static String decryptAWSEnvironmentKey(String envVarValue) {
         DecryptResponse decryptResponse;
         try (KmsClient kmsClient = KmsClient.builder().httpClient(UrlConnectionHttpClient.builder().build()).region(Region.US_EAST_2).build()) {
-            byte[] ciphertextBlob = Base64.getDecoder().decode(envVarName);
+            byte[] ciphertextBlob = Base64.getDecoder().decode(envVarValue);
             DecryptRequest decryptRequest = DecryptRequest.builder().ciphertextBlob(SdkBytes.fromByteArray(ciphertextBlob)).build();
             decryptResponse = kmsClient.decrypt(decryptRequest);
         }
