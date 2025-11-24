@@ -18,6 +18,7 @@
         <aws-lambda-java-events.version>3.11.3</aws-lambda-java-events.version>
         <aws-sdk-core.version>2.39.2</aws-sdk-core.version>
         <aws-sdk-kms.version>2.39.2</aws-sdk-kms.version>
+        <aws-sdk-url-connection.version>2.39.2</aws-sdk-url-connection.version>
         <junit.version>5.10.0</junit.version>
         <postgresql.version>42.7.7</postgresql.version>
         <mockito.version>5.7.0</mockito.version>
@@ -53,6 +54,15 @@
             <version>${aws-sdk-kms.version}</version>
         </dependency>
         <!-- AWS SDK KMS -->
+
+        <!-- AWS SDK URL CONNECTION -->
+        <dependency>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>url-connection-client</artifactId>
+            <version>${aws-sdk-url-connection.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <!-- AWS SDK URL CONNECTION -->
 
         <!-- JACKSON -->
         <dependency>
