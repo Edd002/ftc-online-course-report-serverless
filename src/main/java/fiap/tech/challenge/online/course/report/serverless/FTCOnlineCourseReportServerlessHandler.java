@@ -15,6 +15,7 @@ import fiap.tech.challenge.online.course.report.serverless.payload.error.ErrorRe
 import fiap.tech.challenge.online.course.report.serverless.payload.error.InvalidParameterErrorResponse;
 
 import java.security.InvalidParameterException;
+import java.util.Arrays;
 import java.util.Properties;
 
 public class FTCOnlineCourseReportServerlessHandler implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
@@ -55,10 +56,10 @@ public class FTCOnlineCourseReportServerlessHandler implements RequestHandler<AP
             ftcOnlineCourseReportServerlessDAO.registerFeedbackReport(feedbackReportRequest, feedbackReportResponse);
             return new APIGatewayProxyResponseEvent().withStatusCode(201).withIsBase64Encoded(false);
         } catch (InvalidParameterException e) {
-            context.getLogger().log(e.getMessage(), LogLevel.ERROR);
+            context.getLogger().log("Message: " + e.getMessage() + " - Cause: " + e.getCause() + " - Stacktrace: " + Arrays.toString(e.getStackTrace()), LogLevel.ERROR);
             return buildInvalidParameterErrorResponse(e);
         } catch (Exception e) {
-            context.getLogger().log(e.getMessage(), LogLevel.ERROR);
+            context.getLogger().log("Message: " + e.getMessage() + " - Cause: " + e.getCause() + " - Stacktrace: " + Arrays.toString(e.getStackTrace()), LogLevel.ERROR);
             return buildErrorResponse(feedbackReportRequest, e);
         }
     }
