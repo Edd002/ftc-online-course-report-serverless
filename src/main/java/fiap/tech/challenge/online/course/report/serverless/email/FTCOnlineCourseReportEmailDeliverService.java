@@ -16,6 +16,32 @@ public class FTCOnlineCourseReportEmailDeliverService {
         emailConfig = new EmailConfig(applicationProperties);
     }
 
+    public void sendEmailByAwsUrgentFeedback(FeedbackReportResponse feedbackReportResponse) {
+        try {
+            Properties props = new Properties();
+            props.setProperty("mail.transport.protocol", "aws");
+            props.setProperty("mail.aws.user", System.getenv("AWS_ACCESS_KEY_ID"));
+            props.setProperty("mail.aws.password", System.getenv("AWS_ACCESS_KEY_ID"));
+
+            Session session = Session.getInstance(props);
+            session.setDebug(true);
+
+            Message message = new MimeMessage(session);
+            message.setFrom(new InternetAddress(emailConfig.getSender()));
+            Address[] toUser = InternetAddress.parse(feedbackReportResponse.administratorEmail());
+            message.setRecipients(Message.RecipientType.TO, toUser);
+            message.setSubject("E-mail de notificação de feedback urgente do aluno");
+            message.setContent(buildEmailHtmlMessageBody(feedbackReportResponse), "text/html");
+
+            Transport transport = session.getTransport("aws");
+            transport.connect();
+            transport.sendMessage(message, message.getAllRecipients());
+            transport.close();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public void sendEmailUrgentFeedback(FeedbackReportResponse feedbackReportResponse) {
         try {
             Properties props = new Properties();
