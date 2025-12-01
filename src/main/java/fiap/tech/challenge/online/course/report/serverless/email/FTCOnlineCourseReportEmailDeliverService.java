@@ -2,6 +2,10 @@ package fiap.tech.challenge.online.course.report.serverless.email;
 
 import fiap.tech.challenge.online.course.report.serverless.config.EmailConfig;
 import fiap.tech.challenge.online.course.report.serverless.payload.FeedbackReportResponse;
+import fiap.tech.challenge.online.course.report.serverless.payload.HttpObjectMapper;
+import fiap.tech.challenge.online.course.report.serverless.payload.mail.MailFromSendRequest;
+import fiap.tech.challenge.online.course.report.serverless.payload.mail.MailSendRequest;
+import fiap.tech.challenge.online.course.report.serverless.payload.mail.MailToSendRequest;
 
 import javax.mail.*;
 import javax.mail.internet.InternetAddress;
@@ -10,6 +14,8 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.Collections;
+import java.util.Objects;
 import java.util.Properties;
 
 public class FTCOnlineCourseReportEmailDeliverService {
@@ -20,41 +26,30 @@ public class FTCOnlineCourseReportEmailDeliverService {
         emailConfig = new EmailConfig(applicationProperties);
     }
 
-    public void sendEmailByAwsUrgentFeedbackByAPI(FeedbackReportResponse feedbackReportResponse) {
+    public void sendEmailUrgentFeedbackByAPI(FeedbackReportResponse feedbackReportResponse) {
         try (HttpClient client = HttpClient.newHttpClient()) {
-            final String API_URL = "https://send.api.mailtrap.io/api/send";
+            final String EMAIL_API_URL = emailConfig.getUrl();
             final String EMAIL_API_TOKEN_KEY = emailConfig.getPassword();
 
-            String requestBody = buildEmailJsonMessageBody(feedbackReportResponse);
+            String requestBody = HttpObjectMapper.writeValueAsString(
+                    new MailSendRequest(
+                            new MailFromSendRequest(emailConfig.getSender(), "FTC Online Course Report"),
+                            Collections.singletonList(new MailToSendRequest(feedbackReportResponse.administratorEmail())),
+                            "E-mail de notificação de feedback urgente do aluno",
+                            buildEmailHtmlMessageBody(feedbackReportResponse),
+                            "Notification"));
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(API_URL))
+                    .uri(URI.create(EMAIL_API_URL))
                     .header("Authorization", "Bearer " + EMAIL_API_TOKEN_KEY)
                     .header("Content-Type", "application/json")
-                    .POST(HttpRequest.BodyPublishers.ofString(requestBody))
+                    .POST(HttpRequest.BodyPublishers.ofString(Objects.requireNonNull(requestBody)))
                     .build();
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-
-            System.out.println("Status Code: " + response.statusCode());
-            System.out.println("Response Body: " + response.body());
+            System.out.println("Send e-mail request status code: " + response.statusCode());
+            System.out.println("Send e-mail request response body: " + response.body());
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-    }
-
-    private String buildEmailJsonMessageBody(FeedbackReportResponse feedbackReportResponse) {
-        return "Segue o relatório de feedback urgente do aluno: " +
-                "<br><b>Data de registro do feedback:</b> " + feedbackReportResponse.createdIn() +
-                "<br><b>Nome do administrador:</b> " + feedbackReportResponse.administradorName() +
-                "<br><b>E-mail do administrador:</b> " + feedbackReportResponse.administratorEmail() +
-                "<br><b>Nome do professor:</b> " + feedbackReportResponse.teacherName() +
-                "<br><b>E-mail do professor:</b> " + feedbackReportResponse.teacherEmail() +
-                "<br><b>Nome do estudante:</b> " + feedbackReportResponse.studentName() +
-                "<br><b>E-mail do estudante:</b> " + feedbackReportResponse.studentEmail() +
-                "<br><b>Tipo da avaliação:</b> " + feedbackReportResponse.assessmentType() +
-                "<br><b>Nome da avaliação:</b> " + feedbackReportResponse.assessmentName() +
-                "<br><b>Nota da avaliação:</b> " + feedbackReportResponse.assessmentScore() +
-                "<br><b>Descrição do feedback:</b> " + feedbackReportResponse.description() +
-                "<br><b>Comentário do feedback:</b> " + feedbackReportResponse.comment();
     }
 
     public void sendEmailUrgentFeedbackBySMTP(FeedbackReportResponse feedbackReportResponse) {
@@ -67,7 +62,7 @@ public class FTCOnlineCourseReportEmailDeliverService {
             props.setProperty("mail.smtp.ssl.protocols", emailConfig.getSslProtocol());
 
             Session session = Session.getDefaultInstance(props,
-                    new javax.mail.Authenticator() {
+                    new Authenticator() {
                         protected PasswordAuthentication getPasswordAuthentication() {
                             return new PasswordAuthentication(emailConfig.getUsername(), emailConfig.getPassword());
                         }
@@ -80,7 +75,6 @@ public class FTCOnlineCourseReportEmailDeliverService {
             message.setRecipients(Message.RecipientType.TO, toUser);
             message.setSubject("E-mail de notificação de feedback urgente do aluno");
             message.setContent(buildEmailHtmlMessageBody(feedbackReportResponse), "text/html");
-
             Transport.send(message);
         } catch (Exception e) {
             throw new RuntimeException(e);

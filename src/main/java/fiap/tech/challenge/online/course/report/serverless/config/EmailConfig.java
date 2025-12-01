@@ -4,6 +4,7 @@ import java.util.Properties;
 
 public class EmailConfig {
 
+    private final String url;
     private final String host;
     private final int port;
     private final String sender;
@@ -14,6 +15,7 @@ public class EmailConfig {
     private final String sslProtocol;
 
     public EmailConfig(Properties applicationProperties) {
+        this.url = applicationProperties.getProperty("application.mail.url");
         this.host = applicationProperties.getProperty("application.mail.host");
         this.port = Integer.parseInt(applicationProperties.getProperty("application.mail.port"));
         this.sender = applicationProperties.getProperty("application.mail.sender");
@@ -22,6 +24,10 @@ public class EmailConfig {
         this.smtpAuth = Boolean.parseBoolean(applicationProperties.getProperty("application.mail.smtp.auth"));
         this.starttlsEnable = Boolean.parseBoolean(applicationProperties.getProperty("application.mail.smtp.starttls.enable"));
         this.sslProtocol = applicationProperties.getProperty("application.mail.ssl.protocol");
+    }
+
+    public String getUrl() {
+        return url;
     }
 
     public String getHost() {
