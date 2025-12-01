@@ -46,7 +46,7 @@ public class FTCOnlineCourseReportServerlessHandler implements RequestHandler<AP
             context.getLogger().log("Requisição recebida em FTC Online Course Report - hashIdFeedback: " + feedbackReportRequest.hashIdFeedback(), LogLevel.INFO);
             validateAPIGatewayProxyRequestEvent(feedbackReportRequest);
             FeedbackReportResponse feedbackReportResponse = ftcOnlineCourseReportServerlessDAO.getFeedbackReportByHashId(feedbackReportRequest);
-            ftcOnlineCourseReportEmailDeliverService.sendEmailByAwsUrgentFeedback(feedbackReportResponse);
+            ftcOnlineCourseReportEmailDeliverService.sendEmailByAwsUrgentFeedbackByAPI(feedbackReportResponse);
             ftcOnlineCourseReportServerlessDAO.registerFeedbackReport(feedbackReportRequest, feedbackReportResponse);
             return new APIGatewayProxyResponseEvent().withStatusCode(201).withIsBase64Encoded(false);
         } catch (InvalidParameterException e) {
