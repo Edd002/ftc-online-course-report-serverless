@@ -32,7 +32,7 @@ public class ApplicationPropertiesLoader {
             StringBuilder sb = new StringBuilder();
             while (matcher.find()) {
                 String envVarName =  matcher.group(1);
-                String envVarValue = System.getenv(envVarName) != null ? decryptAWSEnvironmentKey(System.getenv(envVarName)) : Dotenv.load().get(envVarName);
+                String envVarValue = System.getenv(envVarName) != null ? decrypt(System.getenv(envVarName)) : Dotenv.load().get(envVarName);
                 if (envVarValue != null) {
                     matcher.appendReplacement(sb, Matcher.quoteReplacement(envVarValue));
                 } else {
@@ -44,6 +44,26 @@ public class ApplicationPropertiesLoader {
             properties.setProperty(key, sb.toString());
         }
         return properties;
+    }
+
+    private static String decrypt(String envVarValue) {
+        System.out.println("ApplicationPropertiesLoader::decrypt: START");
+        String decryptTest;
+        try (KmsClient kmsClient = KmsClient.builder().region(Region.US_EAST_2).build()) {
+            DecryptRequest decryptRequest = buildDecryptRequest(envVarValue);
+            DecryptResponse decryptResponse = kmsClient.decrypt(decryptRequest);
+            decryptTest = decryptResponse.plaintext().asUtf8String();
+            System.out.println("ApplicationPropertiesLoader::decrypt: END");
+        }
+        return decryptTest;
+    }
+
+    private static DecryptRequest buildDecryptRequest(String base64EncodedValue) {
+        System.out.println("ApplicationPropertiesLoader::buildDecryptRequest: START");
+        SdkBytes encryptBytes = SdkBytes.fromByteArray(Base64.getDecoder().decode(base64EncodedValue));
+        DecryptRequest decryptRequest = DecryptRequest.builder().keyId("arn:aws:kms:us-east-2:045221533960:key/0b721003-b45e-4ebb-a5a5-973c1c386a87").ciphertextBlob(encryptBytes).build();
+        System.out.println("ApplicationPropertiesLoader::buildDecryptRequest: END");
+        return decryptRequest;
     }
 
     private static String decryptAWSEnvironmentKey(String envVarValue) {
