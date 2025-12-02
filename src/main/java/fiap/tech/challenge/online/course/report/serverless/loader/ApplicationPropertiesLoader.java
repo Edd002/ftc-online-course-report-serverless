@@ -2,6 +2,7 @@ package fiap.tech.challenge.online.course.report.serverless.loader;
 
 import io.github.cdimascio.dotenv.Dotenv;
 import software.amazon.awssdk.core.SdkBytes;
+import software.amazon.awssdk.http.apache.ApacheHttpClient;
 import software.amazon.awssdk.http.urlconnection.UrlConnectionHttpClient;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.kms.KmsClient;
@@ -49,7 +50,7 @@ public class ApplicationPropertiesLoader {
     private static String decrypt(String envVarValue) {
         System.out.println("ApplicationPropertiesLoader::decrypt: START");
         String decryptTest;
-        try (KmsClient kmsClient = KmsClient.builder().region(Region.US_EAST_2).build()) {
+        try (KmsClient kmsClient = KmsClient.builder().httpClient(ApacheHttpClient.builder().build()).region(Region.US_EAST_2).build()) {
             DecryptRequest decryptRequest = buildDecryptRequest(envVarValue);
             DecryptResponse decryptResponse = kmsClient.decrypt(decryptRequest);
             decryptTest = decryptResponse.plaintext().asUtf8String();
