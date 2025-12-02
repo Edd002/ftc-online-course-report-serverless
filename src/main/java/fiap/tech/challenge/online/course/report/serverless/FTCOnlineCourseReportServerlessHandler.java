@@ -6,7 +6,6 @@ import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import com.amazonaws.services.lambda.runtime.logging.LogLevel;
 import fiap.tech.challenge.online.course.report.serverless.dao.FTCOnlineCourseReportServerlessDAO;
-import fiap.tech.challenge.online.course.report.serverless.email.FTCOnlineCourseReportEmailDeliverService;
 import fiap.tech.challenge.online.course.report.serverless.loader.ApplicationPropertiesLoader;
 import fiap.tech.challenge.online.course.report.serverless.payload.FeedbackReportRequest;
 import fiap.tech.challenge.online.course.report.serverless.payload.FeedbackReportResponse;
@@ -22,13 +21,13 @@ public class FTCOnlineCourseReportServerlessHandler implements RequestHandler<AP
 
     private static final Properties applicationProperties;
     private static final FTCOnlineCourseReportServerlessDAO ftcOnlineCourseReportServerlessDAO;
-    private static final FTCOnlineCourseReportEmailDeliverService ftcOnlineCourseReportEmailDeliverService;
+    //private static final FTCOnlineCourseReportEmailDeliverService ftcOnlineCourseReportEmailDeliverService;
 
     static {
         try {
             applicationProperties = ApplicationPropertiesLoader.loadProperties();
             ftcOnlineCourseReportServerlessDAO = new FTCOnlineCourseReportServerlessDAO(applicationProperties);
-            ftcOnlineCourseReportEmailDeliverService = new FTCOnlineCourseReportEmailDeliverService(applicationProperties);
+            //ftcOnlineCourseReportEmailDeliverService = new FTCOnlineCourseReportEmailDeliverService(applicationProperties);
         } catch (Exception ex) {
             System.err.println("Message: " + ex.getMessage() + " - Cause: " + ex.getCause() + " - Stacktrace: " + Arrays.toString(ex.getStackTrace()));
             throw new ExceptionInInitializerError(ex);
@@ -46,8 +45,8 @@ public class FTCOnlineCourseReportServerlessHandler implements RequestHandler<AP
             context.getLogger().log("Requisição recebida em FTC Online Course Report - hashIdFeedback: " + feedbackReportRequest.hashIdFeedback(), LogLevel.INFO);
             validateAPIGatewayProxyRequestEvent(feedbackReportRequest);
             FeedbackReportResponse feedbackReportResponse = ftcOnlineCourseReportServerlessDAO.getFeedbackReportByHashId(feedbackReportRequest);
-            ftcOnlineCourseReportEmailDeliverService.sendEmailUrgentFeedbackByAPI(feedbackReportResponse);
-            ftcOnlineCourseReportServerlessDAO.registerFeedbackReport(feedbackReportRequest, feedbackReportResponse);
+            //ftcOnlineCourseReportEmailDeliverService.sendEmailUrgentFeedbackByAPI(feedbackReportResponse);
+            //ftcOnlineCourseReportServerlessDAO.registerFeedbackReport(feedbackReportRequest, feedbackReportResponse);
             return new APIGatewayProxyResponseEvent().withStatusCode(201).withIsBase64Encoded(false);
         } catch (InvalidParameterException e) {
             context.getLogger().log("Message: " + e.getMessage() + " - Cause: " + e.getCause() + " - Stacktrace: " + Arrays.toString(e.getStackTrace()), LogLevel.ERROR);
