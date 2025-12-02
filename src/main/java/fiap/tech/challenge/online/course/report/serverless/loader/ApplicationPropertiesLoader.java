@@ -1,6 +1,5 @@
 package fiap.tech.challenge.online.course.report.serverless.loader;
 
-import com.amazonaws.services.kms.AWSKMS;
 import com.amazonaws.services.kms.AWSKMSClientBuilder;
 import com.amazonaws.services.kms.model.DecryptRequest;
 import io.github.cdimascio.dotenv.Dotenv;
@@ -13,11 +12,8 @@ import software.amazon.awssdk.services.kms.model.DecryptResponse;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
-import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.Base64;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -53,16 +49,19 @@ public class ApplicationPropertiesLoader {
     }
 
     private static String decryptKey(String envVarValue) {
-        System.out.println("Decrypting key");
-        byte[] encryptedKey = com.amazonaws.util.Base64.decode(envVarValue);
-        Map<String, String> encryptionContext = new HashMap<>();
-        encryptionContext.put("LambdaFunctionName", System.getenv("AWS_LAMBDA_FUNCTION_NAME"));
-        AWSKMS client = AWSKMSClientBuilder.defaultClient();
-        com.amazonaws.services.kms.model.DecryptRequest request = new DecryptRequest()
-                .withCiphertextBlob(ByteBuffer.wrap(encryptedKey))
-                .withEncryptionContext(encryptionContext);
-        ByteBuffer plainTextKey = client.decrypt(request).getPlaintext();
-        return new String(plainTextKey.array(), StandardCharsets.UTF_8);
+        try {
+            ByteBuffer cipherTextBlob = ByteBuffer.wrap(Base64.getDecoder().decode(envVarValue));
+            DecryptRequest decryptRequest = new DecryptRequest().withCiphertextBlob(cipherTextBlob);
+            ByteBuffer plaintextBuffer = AWSKMSClientBuilder.standard().build().decrypt(decryptRequest).getPlaintext();
+            byte[] plaintextBytes = new byte[plaintextBuffer.remaining()];
+            plaintextBuffer.get(plaintextBytes);
+            String decryptedPlaintext = new String(plaintextBytes);
+            System.out.println("Decrypted plaintext: " + decryptedPlaintext);
+            return decryptedPlaintext;
+        } catch (Exception e) {
+            System.out.println("Error during decryption: " + e.getMessage());
+            throw new RuntimeException("KMS Decryption failed", e);
+        }
     }
 
     private static String decryptAWSEnvironmentKey(String envVarValue) {
