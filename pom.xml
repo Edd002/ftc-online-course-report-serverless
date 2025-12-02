@@ -26,13 +26,6 @@
     </properties>
 
     <dependencies>
-        <dependency>
-            <groupId>com.amazonaws</groupId>
-            <artifactId>aws-java-sdk-kms</artifactId>
-            <version>1.12.794</version>
-        </dependency>
-
-
         <!-- AWS LAMBDA -->
         <dependency>
             <groupId>com.amazonaws</groupId>
