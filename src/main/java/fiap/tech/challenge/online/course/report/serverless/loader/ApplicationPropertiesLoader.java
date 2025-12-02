@@ -10,6 +10,7 @@ import software.amazon.awssdk.services.kms.model.DecryptResponse;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.Duration;
 import java.util.Base64;
 import java.util.Properties;
 import java.util.regex.Matcher;
@@ -47,7 +48,7 @@ public class ApplicationPropertiesLoader {
 
     private static String decryptAWSEnvironmentKey(String envVarValue) {
         DecryptResponse decryptResponse;
-        try (KmsClient kmsClient = KmsClient.builder().httpClient(UrlConnectionHttpClient.builder().build()).region(Region.US_EAST_2).build()) {
+        try (KmsClient kmsClient = KmsClient.builder().httpClient(UrlConnectionHttpClient.builder().connectionTimeout(Duration.ofSeconds(5)).socketTimeout(Duration.ofSeconds(30)).build()).region(Region.US_EAST_2).build()) {
             byte[] ciphertextBlob = Base64.getDecoder().decode(envVarValue);
             DecryptRequest decryptRequest = DecryptRequest.builder().ciphertextBlob(SdkBytes.fromByteArray(ciphertextBlob)).build();
             decryptResponse = kmsClient.decrypt(decryptRequest);
