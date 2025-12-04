@@ -5,8 +5,12 @@ import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import com.amazonaws.services.lambda.runtime.logging.LogLevel;
+import fiap.tech.challenge.online.course.report.serverless.config.CryptoConfig;
+import fiap.tech.challenge.online.course.report.serverless.dao.FTCOnlineCourseReportServerlessDAO;
+import fiap.tech.challenge.online.course.report.serverless.email.FTCOnlineCourseReportEmailDeliverService;
 import fiap.tech.challenge.online.course.report.serverless.loader.ApplicationPropertiesLoader;
 import fiap.tech.challenge.online.course.report.serverless.payload.FeedbackReportRequest;
+import fiap.tech.challenge.online.course.report.serverless.payload.FeedbackReportResponse;
 import fiap.tech.challenge.online.course.report.serverless.payload.HttpObjectMapper;
 import fiap.tech.challenge.online.course.report.serverless.payload.error.ErrorResponse;
 import fiap.tech.challenge.online.course.report.serverless.payload.error.InvalidParameterErrorResponse;
@@ -17,15 +21,17 @@ import java.util.Properties;
 
 public class FTCOnlineCourseReportServerlessHandler implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
 
+    private static final CryptoConfig cryptoConfig;
     private static final Properties applicationProperties;
-    //private static final FTCOnlineCourseReportServerlessDAO ftcOnlineCourseReportServerlessDAO;
-    //private static final FTCOnlineCourseReportEmailDeliverService ftcOnlineCourseReportEmailDeliverService;
+    private static final FTCOnlineCourseReportServerlessDAO ftcOnlineCourseReportServerlessDAO;
+    private static final FTCOnlineCourseReportEmailDeliverService ftcOnlineCourseReportEmailDeliverService;
 
     static {
         try {
-            applicationProperties = ApplicationPropertiesLoader.loadProperties();
-            //ftcOnlineCourseReportServerlessDAO = new FTCOnlineCourseReportServerlessDAO(applicationProperties);
-            //ftcOnlineCourseReportEmailDeliverService = new FTCOnlineCourseReportEmailDeliverService(applicationProperties);
+            cryptoConfig = new CryptoConfig();
+            applicationProperties = ApplicationPropertiesLoader.loadProperties(cryptoConfig);
+            ftcOnlineCourseReportServerlessDAO = new FTCOnlineCourseReportServerlessDAO(applicationProperties);
+            ftcOnlineCourseReportEmailDeliverService = new FTCOnlineCourseReportEmailDeliverService(applicationProperties);
         } catch (Exception ex) {
             System.err.println("Message: " + ex.getMessage() + " - Cause: " + ex.getCause() + " - Stacktrace: " + Arrays.toString(ex.getStackTrace()));
             throw new ExceptionInInitializerError(ex);
@@ -42,9 +48,9 @@ public class FTCOnlineCourseReportServerlessHandler implements RequestHandler<AP
             }
             context.getLogger().log("Requisição recebida em FTC Online Course Report - hashIdFeedback: " + feedbackReportRequest.hashIdFeedback(), LogLevel.INFO);
             validateAPIGatewayProxyRequestEvent(feedbackReportRequest);
-            //FeedbackReportResponse feedbackReportResponse = ftcOnlineCourseReportServerlessDAO.getFeedbackReportByHashId(feedbackReportRequest);
-            //ftcOnlineCourseReportEmailDeliverService.sendEmailUrgentFeedbackByAPI(feedbackReportResponse);
-            //ftcOnlineCourseReportServerlessDAO.registerFeedbackReport(feedbackReportRequest, feedbackReportResponse);
+            FeedbackReportResponse feedbackReportResponse = ftcOnlineCourseReportServerlessDAO.getFeedbackReportByHashId(feedbackReportRequest);
+            ftcOnlineCourseReportEmailDeliverService.sendEmailUrgentFeedbackByAPI(feedbackReportResponse);
+            ftcOnlineCourseReportServerlessDAO.registerFeedbackReport(feedbackReportRequest, feedbackReportResponse);
             return new APIGatewayProxyResponseEvent().withStatusCode(201).withIsBase64Encoded(false);
         } catch (InvalidParameterException e) {
             context.getLogger().log("Message: " + e.getMessage() + " - Cause: " + e.getCause() + " - Stacktrace: " + Arrays.toString(e.getStackTrace()), LogLevel.ERROR);
