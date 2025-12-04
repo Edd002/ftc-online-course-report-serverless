@@ -20,7 +20,6 @@
         <aws-sdk-kms.version>2.39.2</aws-sdk-kms.version>
         <aws-sdk-apache.version>2.39.2</aws-sdk-apache.version>
         <aws-sdk-url-connection.version>2.39.2</aws-sdk-url-connection.version>
-        <aws-java-sdk-kms.version>1.12.794</aws-java-sdk-kms.version>
         <junit.version>5.10.0</junit.version>
         <postgresql.version>42.7.7</postgresql.version>
         <mockito.version>5.7.0</mockito.version>
@@ -59,11 +58,6 @@
             <groupId>software.amazon.awssdk</groupId>
             <artifactId>apache-client</artifactId>
             <version>${aws-sdk-apache.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.amazonaws</groupId>
-            <artifactId>aws-java-sdk-kms</artifactId>
-            <version>${aws-java-sdk-kms.version}</version>
         </dependency>
         <!-- AWS SDK KMS -->
 
