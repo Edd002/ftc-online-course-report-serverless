@@ -27,12 +27,18 @@ public class KMSUtil {
     }
 
     public static String decryptAWSEnvironmentKey(String envVarValue) {
+        System.out.printf("envVarValue: %s\n", envVarValue);
         DecryptResponse decryptResponse;
         try (KmsClient kmsClient = KmsClient.builder().httpClient(UrlConnectionHttpClient.builder().connectionTimeout(Duration.ofSeconds(5)).socketTimeout(Duration.ofSeconds(30)).build()).region(Region.US_EAST_2).build()) {
+            System.out.printf("kmsClient: %s\n", kmsClient);
             byte[] ciphertextBlob = Base64.getDecoder().decode(envVarValue);
+            System.out.printf("ciphertextBlob: %s\n", (Object) ciphertextBlob);
             DecryptRequest decryptRequest = DecryptRequest.builder().ciphertextBlob(SdkBytes.fromByteArray(ciphertextBlob)).build();
+            System.out.printf("DecryptRequest: %s\n", decryptRequest);
             decryptResponse = kmsClient.decrypt(decryptRequest);
+            System.out.printf("decryptResponse: %s\n", decryptResponse);
         }
+        System.out.printf("decryptResponse.plaintext().asByteArray(): %s\n", decryptResponse.plaintext().asByteArray());
         return new String(decryptResponse.plaintext().asByteArray());
     }
 }
