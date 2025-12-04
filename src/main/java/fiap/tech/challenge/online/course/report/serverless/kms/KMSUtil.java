@@ -18,7 +18,7 @@ public class KMSUtil {
     public static String encrypt(String plainText) {
         EncryptResponse encryptResponse;
         byte[] base64EncodedValue;
-        try (KmsClient kmsClient = KmsClient.builder().credentialsProvider(StaticCredentialsProvider.create(AwsBasicCredentials.create(System.getenv("AWS_ACCESS_KEY_ID"), System.getenv("AWS_ACCESS_KEY_ID")))).httpClient(UrlConnectionHttpClient.builder().build()).region(Region.US_EAST_2).build()) {
+        try (KmsClient kmsClient = KmsClient.builder().credentialsProvider(StaticCredentialsProvider.create(AwsBasicCredentials.create(System.getenv("AWS_ACCESS_KEY_ID"), System.getenv("AWS_SECRET_ACCESS_KEY")))).httpClient(UrlConnectionHttpClient.builder().build()).region(Region.US_EAST_2).build()) {
             EncryptRequest encryptRequest = EncryptRequest.builder().keyId(System.getenv("KMS_ARN")).plaintext(SdkBytes.fromUtf8String(plainText)).build();
             encryptResponse = kmsClient.encrypt(encryptRequest);
             SdkBytes cipherTextBytes = encryptResponse.ciphertextBlob();
@@ -32,7 +32,7 @@ public class KMSUtil {
 
     public static String decrypt(String encryptedText) {
         DecryptResponse decryptResponse;
-        try (KmsClient kmsClient = KmsClient.builder().credentialsProvider(StaticCredentialsProvider.create(AwsBasicCredentials.create(System.getenv("AWS_ACCESS_KEY_ID"), System.getenv("AWS_ACCESS_KEY_ID")))).httpClient(UrlConnectionHttpClient.builder().build()).region(Region.US_EAST_2).build()) {
+        try (KmsClient kmsClient = KmsClient.builder().credentialsProvider(StaticCredentialsProvider.create(AwsBasicCredentials.create(System.getenv("AWS_ACCESS_KEY_ID"), System.getenv("AWS_SECRET_ACCESS_KEY")))).httpClient(UrlConnectionHttpClient.builder().build()).region(Region.US_EAST_2).build()) {
             byte[] ciphertextBlob = Base64.getDecoder().decode(encryptedText);
             DecryptRequest decryptRequest = DecryptRequest.builder().keyId(System.getenv("KMS_ARN")).ciphertextBlob(SdkBytes.fromByteArray(ciphertextBlob)).build();
             decryptResponse = kmsClient.decrypt(decryptRequest);
