@@ -1,17 +1,10 @@
 package fiap.tech.challenge.online.course.report.serverless.loader;
 
+import fiap.tech.challenge.online.course.report.serverless.kms.KMSUtil;
 import io.github.cdimascio.dotenv.Dotenv;
-import software.amazon.awssdk.core.SdkBytes;
-import software.amazon.awssdk.http.urlconnection.UrlConnectionHttpClient;
-import software.amazon.awssdk.regions.Region;
-import software.amazon.awssdk.services.kms.KmsClient;
-import software.amazon.awssdk.services.kms.model.DecryptRequest;
-import software.amazon.awssdk.services.kms.model.DecryptResponse;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.time.Duration;
-import java.util.Base64;
 import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -31,8 +24,8 @@ public class ApplicationPropertiesLoader {
             Matcher matcher = pattern.matcher(value);
             StringBuilder sb = new StringBuilder();
             while (matcher.find()) {
-                String envVarName =  matcher.group(1);
-                String envVarValue = System.getenv(envVarName) != null ? decryptAWSEnvironmentKey(System.getenv(envVarName)) : Dotenv.load().get(envVarName);
+                String envVarName = matcher.group(1);
+                String envVarValue = System.getenv(envVarName) != null ? KMSUtil.decryptAWSEnvironmentKey(System.getenv(envVarName)) : Dotenv.load().get(envVarName);
                 if (envVarValue != null) {
                     matcher.appendReplacement(sb, Matcher.quoteReplacement(envVarValue));
                 } else {
@@ -44,15 +37,5 @@ public class ApplicationPropertiesLoader {
             properties.setProperty(key, sb.toString());
         }
         return properties;
-    }
-
-    private static String decryptAWSEnvironmentKey(String envVarValue) {
-        DecryptResponse decryptResponse;
-        try (KmsClient kmsClient = KmsClient.builder().httpClient(UrlConnectionHttpClient.builder().connectionTimeout(Duration.ofSeconds(5)).socketTimeout(Duration.ofSeconds(30)).build()).region(Region.US_EAST_2).build()) {
-            byte[] ciphertextBlob = Base64.getDecoder().decode(envVarValue);
-            DecryptRequest decryptRequest = DecryptRequest.builder().ciphertextBlob(SdkBytes.fromByteArray(ciphertextBlob)).build();
-            decryptResponse = kmsClient.decrypt(decryptRequest);
-        }
-        return new String(decryptResponse.plaintext().asByteArray());
     }
 }
