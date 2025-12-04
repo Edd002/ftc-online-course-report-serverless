@@ -25,7 +25,7 @@ public class ApplicationPropertiesLoader {
             StringBuilder sb = new StringBuilder();
             while (matcher.find()) {
                 String envVarName = matcher.group(1);
-                String envVarValue = System.getenv(envVarName) != null ? KMSUtil.decryptAWSEnvironmentKey(System.getenv(envVarName)) : Dotenv.load().get(envVarName);
+                String envVarValue = System.getenv(envVarName) != null ? KMSUtil.decrypt(System.getenv(envVarName)) : Dotenv.load().get(envVarName);
                 if (envVarValue != null) {
                     matcher.appendReplacement(sb, Matcher.quoteReplacement(envVarValue));
                 } else {
