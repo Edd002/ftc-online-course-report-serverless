@@ -1,5 +1,7 @@
 package fiap.tech.challenge.online.course.report.serverless.kms;
 
+import com.amazonaws.services.kms.AWSKMS;
+import com.amazonaws.services.kms.AWSKMSClientBuilder;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.core.SdkBytes;
@@ -11,6 +13,8 @@ import software.amazon.awssdk.services.kms.model.DecryptResponse;
 import software.amazon.awssdk.services.kms.model.EncryptRequest;
 import software.amazon.awssdk.services.kms.model.EncryptResponse;
 
+import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.Base64;
 
@@ -42,5 +46,19 @@ public class KMSUtil {
             throw new RuntimeException(e);
         }
         return new String(decryptResponse.plaintext().asByteArray());
+    }
+
+    public static String oldDecrypt(String encryptedText) {
+        ByteBuffer plainTextKey;
+        try {
+            byte[] encryptedKey = com.amazonaws.util.Base64.decode(encryptedText);
+            AWSKMS client = AWSKMSClientBuilder.defaultClient();
+            com.amazonaws.services.kms.model.DecryptRequest request = new com.amazonaws.services.kms.model.DecryptRequest().withCiphertextBlob(ByteBuffer.wrap(encryptedKey));
+            plainTextKey = client.decrypt(request).getPlaintext();
+        } catch (Exception e) {
+            System.err.println("Erro de descriptografia do texto: " + encryptedText);
+            throw new RuntimeException(e);
+        }
+        return new String(plainTextKey.array(), StandardCharsets.UTF_8);
     }
 }
