@@ -18,7 +18,7 @@ class FTCOnlineCourseReportServerlessHandlerTests {
         APIGatewayProxyRequestEvent request = new APIGatewayProxyRequestEvent();
         request.setHttpMethod("POST");
         request.setPath("/");
-        request.setBody(HttpObjectMapper.writeValueAsString(new FeedbackReportRequest("ae440805-973b-4a1e-ad21-c4727193eb2a")));
+        request.setBody(HttpObjectMapper.writeValueAsString(new FeedbackReportRequest("29ec6f1e-572a-4aad-b096-53225b77aaa8")));
         APIGatewayProxyResponseEvent response = handler.handleRequest(request, context);
         assertEquals(201, response.getStatusCode().intValue());
     }
