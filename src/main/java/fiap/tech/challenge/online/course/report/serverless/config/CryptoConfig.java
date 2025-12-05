@@ -1,5 +1,7 @@
 package fiap.tech.challenge.online.course.report.serverless.config;
 
+import io.github.cdimascio.dotenv.Dotenv;
+
 import javax.crypto.*;
 import javax.crypto.spec.DESedeKeySpec;
 import java.nio.charset.StandardCharsets;
@@ -17,7 +19,8 @@ public class CryptoConfig {
 
     public CryptoConfig() {
         try {
-            String key = System.getenv("CRYPTO_KEY");
+            final String keyName = "CRYPTO_KEY";
+            String key = System.getenv(keyName) != null ? System.getenv(keyName) : Dotenv.load().get(keyName);
             if (key == null || key.isEmpty()) {
                 throw new InvalidParameterException("Erro na recuperação da chave de criptografia.");
             }

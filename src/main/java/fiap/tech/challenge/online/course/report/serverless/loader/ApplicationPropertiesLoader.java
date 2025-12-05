@@ -16,7 +16,7 @@ public class ApplicationPropertiesLoader {
         try (InputStream inputStream = ApplicationPropertiesLoader.class.getClassLoader().getResourceAsStream("application.properties")) {
             properties.load(inputStream);
         } catch (IOException e) {
-            throw new RuntimeException("Erro ao ler arquivo properties de propriedade do sistema: " + e.getMessage());
+            throw new RuntimeException("Erro ao ler arquivo properties da aplicação: " + e.getMessage());
         }
         Pattern pattern = Pattern.compile("\\$\\{(\\w+)}");
         for (String key : properties.stringPropertyNames()) {

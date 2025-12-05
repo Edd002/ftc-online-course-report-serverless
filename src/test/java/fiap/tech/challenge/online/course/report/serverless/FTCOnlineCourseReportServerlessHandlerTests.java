@@ -3,7 +3,7 @@ package fiap.tech.challenge.online.course.report.serverless;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import fiap.tech.challenge.online.course.report.serverless.payload.HttpObjectMapper;
-import fiap.tech.challenge.online.course.report.serverless.payload.FeedbackReportRequest;
+import fiap.tech.challenge.online.course.report.serverless.payload.record.FeedbackReportRequest;
 import mock.TestContext;
 import org.junit.jupiter.api.Test;
 
