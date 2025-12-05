@@ -2,15 +2,16 @@ package fiap.tech.challenge.online.course.report.serverless;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
+import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import com.amazonaws.services.lambda.runtime.logging.LogLevel;
 import fiap.tech.challenge.online.course.report.serverless.config.CryptoConfig;
 import fiap.tech.challenge.online.course.report.serverless.dao.FTCOnlineCourseReportServerlessDAO;
 import fiap.tech.challenge.online.course.report.serverless.email.FTCOnlineCourseReportEmailDeliverService;
 import fiap.tech.challenge.online.course.report.serverless.loader.ApplicationPropertiesLoader;
-import fiap.tech.challenge.online.course.report.serverless.payload.HttpObjectMapper;
 import fiap.tech.challenge.online.course.report.serverless.payload.record.FeedbackReportRequest;
 import fiap.tech.challenge.online.course.report.serverless.payload.record.FeedbackReportResponse;
+import fiap.tech.challenge.online.course.report.serverless.payload.HttpObjectMapper;
 import fiap.tech.challenge.online.course.report.serverless.payload.record.error.ErrorResponse;
 import fiap.tech.challenge.online.course.report.serverless.payload.record.error.InvalidParameterErrorResponse;
 
@@ -18,7 +19,7 @@ import java.security.InvalidParameterException;
 import java.util.Arrays;
 import java.util.Properties;
 
-public class FTCOnlineCourseReportServerlessHandler implements RequestHandler<String, String> {
+public class FTCOnlineCourseReportServerlessHandler implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
 
     private static final CryptoConfig cryptoConfig;
     private static final Properties applicationProperties;
@@ -38,25 +39,25 @@ public class FTCOnlineCourseReportServerlessHandler implements RequestHandler<St
     }
 
     @Override
-    public String handleRequest(String input, Context context) {
+    public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent request, Context context) {
         try {
-            FeedbackReportRequest feedbackReportRequest = HttpObjectMapper.readValue(input, FeedbackReportRequest.class);
+            FeedbackReportRequest feedbackReportRequest = HttpObjectMapper.readValue(request.getBody(), FeedbackReportRequest.class);
             if (feedbackReportRequest == null) {
                 context.getLogger().log("Erro de conversão de payload de requisição.", LogLevel.ERROR);
-                return "O payload para envio de e-mail de feedback urgente não foi informado corretamente.";
+                return buildInvalidParameterErrorResponse(new InvalidParameterException("O payload para envio de e-mail de feedback urgente não foi informado corretamente."));
             }
             context.getLogger().log("Requisição recebida em FTC Online Course Report - hashIdFeedback: " + feedbackReportRequest.hashIdFeedback(), LogLevel.INFO);
             validateAPIGatewayProxyRequestEvent(feedbackReportRequest);
             FeedbackReportResponse feedbackReportResponse = ftcOnlineCourseReportServerlessDAO.getFeedbackReportByHashId(feedbackReportRequest);
             ftcOnlineCourseReportEmailDeliverService.sendEmailUrgentFeedbackByAPI(feedbackReportResponse);
             ftcOnlineCourseReportServerlessDAO.registerFeedbackReport(feedbackReportRequest, feedbackReportResponse);
-            return "Sucesso";
+            return new APIGatewayProxyResponseEvent().withStatusCode(201).withIsBase64Encoded(false);
         } catch (InvalidParameterException e) {
             context.getLogger().log("Message: " + e.getMessage() + " - Cause: " + e.getCause() + " - Stacktrace: " + Arrays.toString(e.getStackTrace()), LogLevel.ERROR);
-            return "Error: " + e.getMessage();
+            return buildInvalidParameterErrorResponse(e);
         } catch (Exception e) {
             context.getLogger().log("Message: " + e.getMessage() + " - Cause: " + e.getCause() + " - Stacktrace: " + Arrays.toString(e.getStackTrace()), LogLevel.ERROR);
-            return "Error: " + e.getMessage();
+            return buildErrorResponse(e);
         }
     }
 
