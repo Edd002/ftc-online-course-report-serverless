@@ -1,4 +1,4 @@
-package fiap.tech.challenge.online.course.report.serverless.payload.mail;
+package fiap.tech.challenge.online.course.report.serverless.payload.record.mail;
 
 import java.util.List;
 

@@ -1,9 +1,9 @@
 package fiap.tech.challenge.online.course.report.serverless.dao;
 
 import fiap.tech.challenge.online.course.report.serverless.config.DataSourceConfig;
-import fiap.tech.challenge.online.course.report.serverless.payload.AssessmentType;
-import fiap.tech.challenge.online.course.report.serverless.payload.FeedbackReportRequest;
-import fiap.tech.challenge.online.course.report.serverless.payload.FeedbackReportResponse;
+import fiap.tech.challenge.online.course.report.serverless.payload.enumeration.AssessmentType;
+import fiap.tech.challenge.online.course.report.serverless.payload.record.FeedbackReportRequest;
+import fiap.tech.challenge.online.course.report.serverless.payload.record.FeedbackReportResponse;
 
 import java.sql.*;
 import java.util.*;

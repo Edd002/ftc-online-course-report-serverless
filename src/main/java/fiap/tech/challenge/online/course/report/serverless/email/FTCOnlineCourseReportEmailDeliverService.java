@@ -1,11 +1,11 @@
 package fiap.tech.challenge.online.course.report.serverless.email;
 
 import fiap.tech.challenge.online.course.report.serverless.config.EmailConfig;
-import fiap.tech.challenge.online.course.report.serverless.payload.FeedbackReportResponse;
+import fiap.tech.challenge.online.course.report.serverless.payload.record.FeedbackReportResponse;
 import fiap.tech.challenge.online.course.report.serverless.payload.HttpObjectMapper;
-import fiap.tech.challenge.online.course.report.serverless.payload.mail.MailFromSendRequest;
-import fiap.tech.challenge.online.course.report.serverless.payload.mail.MailSendRequest;
-import fiap.tech.challenge.online.course.report.serverless.payload.mail.MailToSendRequest;
+import fiap.tech.challenge.online.course.report.serverless.payload.record.mail.MailFromSendRequest;
+import fiap.tech.challenge.online.course.report.serverless.payload.record.mail.MailSendRequest;
+import fiap.tech.challenge.online.course.report.serverless.payload.record.mail.MailToSendRequest;
 
 import javax.mail.*;
 import javax.mail.internet.InternetAddress;

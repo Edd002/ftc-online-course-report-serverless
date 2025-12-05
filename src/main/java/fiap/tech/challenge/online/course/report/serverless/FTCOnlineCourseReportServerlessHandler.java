@@ -9,11 +9,11 @@ import fiap.tech.challenge.online.course.report.serverless.config.CryptoConfig;
 import fiap.tech.challenge.online.course.report.serverless.dao.FTCOnlineCourseReportServerlessDAO;
 import fiap.tech.challenge.online.course.report.serverless.email.FTCOnlineCourseReportEmailDeliverService;
 import fiap.tech.challenge.online.course.report.serverless.loader.ApplicationPropertiesLoader;
-import fiap.tech.challenge.online.course.report.serverless.payload.FeedbackReportRequest;
-import fiap.tech.challenge.online.course.report.serverless.payload.FeedbackReportResponse;
+import fiap.tech.challenge.online.course.report.serverless.payload.record.FeedbackReportRequest;
+import fiap.tech.challenge.online.course.report.serverless.payload.record.FeedbackReportResponse;
 import fiap.tech.challenge.online.course.report.serverless.payload.HttpObjectMapper;
-import fiap.tech.challenge.online.course.report.serverless.payload.error.ErrorResponse;
-import fiap.tech.challenge.online.course.report.serverless.payload.error.InvalidParameterErrorResponse;
+import fiap.tech.challenge.online.course.report.serverless.payload.record.error.ErrorResponse;
+import fiap.tech.challenge.online.course.report.serverless.payload.record.error.InvalidParameterErrorResponse;
 
 import java.security.InvalidParameterException;
 import java.util.Arrays;
