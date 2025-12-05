@@ -45,6 +45,7 @@ public class FTCOnlineCourseReportEmailDeliverService {
                     .POST(HttpRequest.BodyPublishers.ofString(Objects.requireNonNull(requestBody)))
                     .build();
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
             System.out.println("Send e-mail request status code: " + response.statusCode());
             System.out.println("Send e-mail request response body: " + response.body());
         } catch (Exception e) {
