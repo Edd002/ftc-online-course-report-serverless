@@ -57,6 +57,7 @@ public class FTCOnlineCourseReportEmailDeliverService {
 
     public void sendEmailUrgentFeedbackByGmailSMTP(FeedbackReportResponse feedbackReportResponse) {
         try {
+            Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
             Properties props = new Properties();
             props.setProperty("mail.smtp.host", emailConfig.getGmailHost());
             props.setProperty("mail.smtp.port", emailConfig.getGmailPort());
