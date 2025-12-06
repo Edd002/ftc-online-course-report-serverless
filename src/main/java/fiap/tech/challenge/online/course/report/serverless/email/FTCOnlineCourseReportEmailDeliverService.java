@@ -27,14 +27,14 @@ public class FTCOnlineCourseReportEmailDeliverService {
         emailConfig = new EmailConfig(applicationProperties);
     }
 
-    public void sendEmailUrgentFeedbackByAPI(FeedbackReportResponse feedbackReportResponse) {
+    public void sendEmailUrgentFeedbackByMailtrapAPI(FeedbackReportResponse feedbackReportResponse) {
         try (HttpClient client = HttpClient.newHttpClient()) {
-            final String EMAIL_API_URL = emailConfig.getUrl();
-            final String EMAIL_API_TOKEN_KEY = emailConfig.getPassword();
+            final String EMAIL_API_URL = emailConfig.getMailtrapUrl();
+            final String EMAIL_API_TOKEN_KEY = emailConfig.getMailtrapPassword();
 
             String requestBody = HttpObjectMapper.writeValueAsString(
                     new MailSendRequest(
-                            new MailFromSendRequest(emailConfig.getSender(), "FTC Online Course Report"),
+                            new MailFromSendRequest(emailConfig.getMailtrapSenderEmail(), "FTC Online Course Report"),
                             Collections.singletonList(new MailToSendRequest(feedbackReportResponse.administratorEmail())),
                             "E-mail de notificação de feedback urgente do aluno",
                             buildEmailHtmlMessageBody(feedbackReportResponse),
@@ -55,25 +55,25 @@ public class FTCOnlineCourseReportEmailDeliverService {
         }
     }
 
-    public void sendEmailUrgentFeedbackBySMTP(FeedbackReportResponse feedbackReportResponse) {
+    public void sendEmailUrgentFeedbackByGmailSMTP(FeedbackReportResponse feedbackReportResponse) {
         try {
             Properties props = new Properties();
-            props.setProperty("mail.smtp.host", emailConfig.getHost());
-            props.setProperty("mail.smtp.port", emailConfig.getPort());
-            props.setProperty("mail.smtp.auth", emailConfig.isSmtpAuth());
-            props.setProperty("mail.smtp.starttls.enable", emailConfig.isStarttlsEnable());
-            props.setProperty("mail.smtp.ssl.protocols", emailConfig.getSslProtocol());
+            props.setProperty("mail.smtp.host", emailConfig.getGmailHost());
+            props.setProperty("mail.smtp.port", emailConfig.getGmailPort());
+            props.setProperty("mail.smtp.auth", emailConfig.isGmailSmtpAuth());
+            props.setProperty("mail.smtp.starttls.enable", emailConfig.isGmailStarttlsEnable());
+            props.setProperty("mail.smtp.ssl.protocols", emailConfig.getGmailSslProtocol());
 
             Session session = Session.getDefaultInstance(props,
                     new Authenticator() {
                         protected PasswordAuthentication getPasswordAuthentication() {
-                            return new PasswordAuthentication(emailConfig.getUsername(), emailConfig.getPassword());
+                            return new PasswordAuthentication(emailConfig.getGmailUsername(), emailConfig.getGmailPassword());
                         }
                     });
             session.setDebug(true);
 
             Message message = new MimeMessage(session);
-            message.setFrom(new InternetAddress(emailConfig.getSender()));
+            message.setFrom(new InternetAddress(emailConfig.getGmailUsername(), "FTC Online Course Report"));
             Address[] toUser = InternetAddress.parse(feedbackReportResponse.administratorEmail());
             message.setRecipients(Message.RecipientType.TO, toUser);
             message.setSubject("E-mail de notificação de feedback urgente do aluno");
