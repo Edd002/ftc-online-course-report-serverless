@@ -16,7 +16,6 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Objects;
 import java.util.Properties;
@@ -52,7 +51,6 @@ public class FTCOnlineCourseReportEmailDeliverService {
             System.out.println("Send e-mail request status code: " + response.statusCode());
             System.out.println("Send e-mail request response body: " + response.body());
         } catch (Exception ex) {
-            System.err.println("Message: " + ex.getMessage() + " - Cause: " + ex.getCause() + " - Stacktrace: " + Arrays.toString(ex.getStackTrace()));
             throw new RuntimeException(ex);
         }
     }
