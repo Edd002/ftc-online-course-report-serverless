@@ -1,12 +1,14 @@
 package fiap.tech.challenge.online.course.report.serverless.email;
 
 import fiap.tech.challenge.online.course.report.serverless.config.EmailConfig;
-import fiap.tech.challenge.online.course.report.serverless.payload.record.FeedbackReportResponse;
 import fiap.tech.challenge.online.course.report.serverless.payload.HttpObjectMapper;
+import fiap.tech.challenge.online.course.report.serverless.payload.record.FeedbackReportResponse;
 import fiap.tech.challenge.online.course.report.serverless.payload.record.mail.MailFromSendRequest;
 import fiap.tech.challenge.online.course.report.serverless.payload.record.mail.MailSendRequest;
 import fiap.tech.challenge.online.course.report.serverless.payload.record.mail.MailToSendRequest;
 
+import javax.activation.CommandMap;
+import javax.activation.MailcapCommandMap;
 import javax.mail.*;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
@@ -78,7 +80,12 @@ public class FTCOnlineCourseReportEmailDeliverService {
             Address[] toUser = InternetAddress.parse(feedbackReportResponse.administratorEmail());
             message.setRecipients(Message.RecipientType.TO, toUser);
             message.setSubject("E-mail de notificação de feedback urgente do aluno");
-            message.setContent(buildEmailHtmlMessageBody(feedbackReportResponse), "text/html; charset=UTF-8");
+            message.setContent(buildEmailHtmlMessageBody(feedbackReportResponse), "text/html");
+
+            MailcapCommandMap mc = (MailcapCommandMap) CommandMap.getDefaultCommandMap();
+            mc.addMailcap("text/html;; x-java-content-handler=com.sun.mail.handlers.text_html");
+            CommandMap.setDefaultCommandMap(mc);
+
             Transport.send(message);
         } catch (Exception e) {
             throw new RuntimeException(e);
