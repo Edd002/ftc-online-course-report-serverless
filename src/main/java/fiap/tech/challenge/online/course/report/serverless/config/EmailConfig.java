@@ -4,61 +4,67 @@ import java.util.Properties;
 
 public class EmailConfig {
 
-    private final String url;
-    private final String host;
-    private final int port;
-    private final String sender;
-    private final String username;
-    private final String password;
-    private final boolean smtpAuth;
-    private final boolean starttlsEnable;
-    private final String sslProtocol;
+    private final String mailtrapUrl;
+    private final String mailtrapPassword;
+    private final String mailtrapSenderEmail;
+    private final String gmailHost;
+    private final int gmailPort;
+    private final String gmailUsername;
+    private final String gmailPassword;
+    private final boolean gmailSmtpAuth;
+    private final boolean gmailStarttlsEnable;
+    private final String gmailSslProtocol;
 
     public EmailConfig(Properties applicationProperties) {
-        this.url = applicationProperties.getProperty("application.mail.url");
-        this.host = applicationProperties.getProperty("application.mail.host");
-        this.port = Integer.parseInt(applicationProperties.getProperty("application.mail.port"));
-        this.sender = applicationProperties.getProperty("application.mail.sender");
-        this.username = applicationProperties.getProperty("application.mail.username");
-        this.password = applicationProperties.getProperty("application.mail.password");
-        this.smtpAuth = Boolean.parseBoolean(applicationProperties.getProperty("application.mail.smtp.auth"));
-        this.starttlsEnable = Boolean.parseBoolean(applicationProperties.getProperty("application.mail.smtp.starttls.enable"));
-        this.sslProtocol = applicationProperties.getProperty("application.mail.ssl.protocol");
+        this.mailtrapUrl = applicationProperties.getProperty("application.mailtrap.url");
+        this.mailtrapPassword = applicationProperties.getProperty("application.mailtrap.password");
+        this.mailtrapSenderEmail = applicationProperties.getProperty("application.mailtrap.sender.email");
+        this.gmailHost = applicationProperties.getProperty("application.gmail.host");
+        this.gmailPort = Integer.parseInt(applicationProperties.getProperty("application.gmail.port"));
+        this.gmailUsername = applicationProperties.getProperty("application.gmail.username");
+        this.gmailPassword = applicationProperties.getProperty("application.gmail.password");
+        this.gmailSmtpAuth = Boolean.parseBoolean(applicationProperties.getProperty("application.gmail.smtp.auth"));
+        this.gmailStarttlsEnable = Boolean.parseBoolean(applicationProperties.getProperty("application.gmail.smtp.starttls.enable"));
+        this.gmailSslProtocol = applicationProperties.getProperty("application.gmail.ssl.protocol");
     }
 
-    public String getUrl() {
-        return url;
+    public String getMailtrapUrl() {
+        return mailtrapUrl;
     }
 
-    public String getHost() {
-        return host;
+    public String getMailtrapPassword() {
+        return mailtrapPassword;
     }
 
-    public String getPort() {
-        return String.valueOf(port);
+    public String getMailtrapSenderEmail() {
+        return mailtrapSenderEmail;
     }
 
-    public String getSender() {
-        return sender;
+    public String getGmailHost() {
+        return gmailHost;
     }
 
-    public String getUsername() {
-        return username;
+    public String getGmailPort() {
+        return String.valueOf(gmailPort);
     }
 
-    public String getPassword() {
-        return password;
+    public String getGmailUsername() {
+        return gmailUsername;
     }
 
-    public String isSmtpAuth() {
-        return String.valueOf(smtpAuth);
+    public String getGmailPassword() {
+        return gmailPassword;
     }
 
-    public String isStarttlsEnable() {
-        return String.valueOf(starttlsEnable);
+    public String isGmailSmtpAuth() {
+        return String.valueOf(gmailSmtpAuth);
     }
 
-    public String getSslProtocol() {
-        return sslProtocol;
+    public String isGmailStarttlsEnable() {
+        return String.valueOf(gmailStarttlsEnable);
+    }
+
+    public String getGmailSslProtocol() {
+        return gmailSslProtocol;
     }
 }
