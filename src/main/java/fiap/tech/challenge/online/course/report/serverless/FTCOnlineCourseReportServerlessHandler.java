@@ -10,7 +10,6 @@ import fiap.tech.challenge.online.course.report.serverless.dao.FTCOnlineCourseRe
 import fiap.tech.challenge.online.course.report.serverless.email.FTCOnlineCourseReportEmailDeliverService;
 import fiap.tech.challenge.online.course.report.serverless.loader.ApplicationPropertiesLoader;
 import fiap.tech.challenge.online.course.report.serverless.payload.HttpObjectMapper;
-import fiap.tech.challenge.online.course.report.serverless.payload.enumeration.AssessmentType;
 import fiap.tech.challenge.online.course.report.serverless.payload.record.FeedbackReportRequest;
 import fiap.tech.challenge.online.course.report.serverless.payload.record.FeedbackReportResponse;
 import fiap.tech.challenge.online.course.report.serverless.payload.record.error.ErrorResponse;
@@ -50,7 +49,7 @@ public class FTCOnlineCourseReportServerlessHandler implements RequestHandler<AP
             context.getLogger().log("Requisição recebida em FTC Online Course Report - hashIdFeedback: " + feedbackReportRequest.hashIdFeedback(), LogLevel.INFO);
             validateAPIGatewayProxyRequestEvent(feedbackReportRequest);
             FeedbackReportResponse feedbackReportResponse = ftcOnlineCourseReportServerlessDAO.getFeedbackReportByHashId(feedbackReportRequest);
-            ftcOnlineCourseReportEmailDeliverService.sendEmailUrgentFeedbackByGmailSMTP(new FeedbackReportResponse(true, "Descrição Feedback 1", "Comentário Feedback 1", "Nome Administrador 1", "edduarddollima@gmail.com", "Nome Teacher 1", "teacher1@email.com", "Nome Student 1", "student1@email.com", "Test", AssessmentType.TEST, 1.0, "2025-12-05 17:36:58.715239"));
+            ftcOnlineCourseReportEmailDeliverService.sendEmailUrgentFeedbackByGmailSMTP(feedbackReportResponse);
             ftcOnlineCourseReportServerlessDAO.registerFeedbackReport(feedbackReportRequest, feedbackReportResponse);
             return new APIGatewayProxyResponseEvent().withStatusCode(201).withIsBase64Encoded(false);
         } catch (InvalidParameterException e) {
