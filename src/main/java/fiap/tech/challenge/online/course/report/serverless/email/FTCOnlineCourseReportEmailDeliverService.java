@@ -77,7 +77,7 @@ public class FTCOnlineCourseReportEmailDeliverService {
             Address[] toUser = InternetAddress.parse(feedbackReportResponse.administratorEmail());
             message.setRecipients(Message.RecipientType.TO, toUser);
             message.setSubject("E-mail de notificação de feedback urgente do aluno");
-            message.setContent(buildEmailHtmlMessageBody(feedbackReportResponse), "text/html");
+            message.setContent(buildEmailHtmlMessageBody(feedbackReportResponse), "text/html; charset=UTF-8");
             Transport.send(message);
         } catch (Exception e) {
             throw new RuntimeException(e);
