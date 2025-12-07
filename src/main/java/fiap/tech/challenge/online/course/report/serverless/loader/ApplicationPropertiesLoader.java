@@ -1,7 +1,7 @@
 package fiap.tech.challenge.online.course.report.serverless.loader;
 
-import fiap.tech.challenge.online.course.report.serverless.config.CryptoConfig;
-import io.github.cdimascio.dotenv.Dotenv;
+import fiap.tech.challenge.online.course.report.serverless.config.KMSConfig;
+import fiap.tech.challenge.online.course.report.serverless.util.EnvUtil;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -11,7 +11,7 @@ import java.util.regex.Pattern;
 
 public class ApplicationPropertiesLoader {
 
-    public static Properties loadProperties(CryptoConfig cryptoConfig) {
+    public static Properties loadProperties(KMSConfig kmsConfig) {
         Properties properties = new Properties();
         try (InputStream inputStream = ApplicationPropertiesLoader.class.getClassLoader().getResourceAsStream("application.properties")) {
             properties.load(inputStream);
@@ -25,7 +25,7 @@ public class ApplicationPropertiesLoader {
             StringBuilder sb = new StringBuilder();
             while (matcher.find()) {
                 String envVarName = matcher.group(1);
-                String envVarValue = System.getenv(envVarName) != null ? cryptoConfig.decrypt(System.getenv(envVarName)) : Dotenv.load().get(envVarName);
+                String envVarValue = EnvUtil.getVar(envVarName, kmsConfig);
                 if (envVarValue != null) {
                     matcher.appendReplacement(sb, Matcher.quoteReplacement(envVarValue));
                 } else {
