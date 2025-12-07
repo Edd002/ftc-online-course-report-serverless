@@ -1,4 +1,4 @@
-package mock;
+package fiap.tech.challenge.online.course.report.serverless.mock;
 
 import com.amazonaws.services.lambda.runtime.ClientContext;
 import com.amazonaws.services.lambda.runtime.CognitoIdentity;
