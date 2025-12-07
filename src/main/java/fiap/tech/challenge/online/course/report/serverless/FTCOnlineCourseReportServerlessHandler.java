@@ -5,7 +5,6 @@ import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import com.amazonaws.services.lambda.runtime.logging.LogLevel;
-import fiap.tech.challenge.online.course.report.serverless.config.CryptoConfig;
 import fiap.tech.challenge.online.course.report.serverless.config.KMSConfig;
 import fiap.tech.challenge.online.course.report.serverless.dao.FTCOnlineCourseReportServerlessDAO;
 import fiap.tech.challenge.online.course.report.serverless.email.FTCOnlineCourseReportEmailDeliverService;
@@ -22,15 +21,15 @@ import java.util.Properties;
 
 public class FTCOnlineCourseReportServerlessHandler implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
 
-    private static final CryptoConfig cryptoConfig;
+    private static final KMSConfig kmsConfig;
     private static final Properties applicationProperties;
     private static final FTCOnlineCourseReportServerlessDAO ftcOnlineCourseReportServerlessDAO;
     private static final FTCOnlineCourseReportEmailDeliverService ftcOnlineCourseReportEmailDeliverService;
 
     static {
         try {
-            cryptoConfig = new CryptoConfig();
-            applicationProperties = ApplicationPropertiesLoader.loadProperties(cryptoConfig);
+            kmsConfig = new KMSConfig();
+            applicationProperties = ApplicationPropertiesLoader.loadProperties(kmsConfig);
             ftcOnlineCourseReportServerlessDAO = new FTCOnlineCourseReportServerlessDAO(applicationProperties);
             ftcOnlineCourseReportEmailDeliverService = new FTCOnlineCourseReportEmailDeliverService(applicationProperties);
         } catch (Exception ex) {
@@ -42,8 +41,6 @@ public class FTCOnlineCourseReportServerlessHandler implements RequestHandler<AP
     @Override
     public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent request, Context context) {
         try {
-            System.out.println("KMS Decrypt: " + new KMSConfig().decrypt(new KMSConfig().encrypt("ABC")));
-
             FeedbackReportRequest feedbackReportRequest = HttpObjectMapper.readValue(request.getBody(), FeedbackReportRequest.class);
             if (feedbackReportRequest == null) {
                 context.getLogger().log("Erro de conversão de payload de requisição.", LogLevel.ERROR);

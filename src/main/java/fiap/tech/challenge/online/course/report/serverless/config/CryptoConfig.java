@@ -1,6 +1,6 @@
 package fiap.tech.challenge.online.course.report.serverless.config;
 
-import io.github.cdimascio.dotenv.Dotenv;
+import fiap.tech.challenge.online.course.report.serverless.util.EnvUtil;
 
 import javax.crypto.*;
 import javax.crypto.spec.DESedeKeySpec;
@@ -19,8 +19,7 @@ public class CryptoConfig {
 
     public CryptoConfig() {
         try {
-            final String keyName = "CRYPTO_KEY";
-            String key = System.getenv(keyName) != null ? System.getenv(keyName) : Dotenv.load().get(keyName);
+            String key = EnvUtil.getVar("CRYPTO_KEY");
             if (key == null || key.isEmpty()) {
                 throw new InvalidParameterException("Erro na recuperação da chave de criptografia.");
             }
@@ -42,7 +41,7 @@ public class CryptoConfig {
             byte[] cipherText = cipher.doFinal(value.getBytes(StandardCharsets.UTF_8));
             return Base64.getEncoder().encodeToString(cipherText);
         } catch (InvalidKeyException | IllegalBlockSizeException | BadPaddingException e) {
-            System.err.println("Erro de descriptografia do texto: " + value);
+            System.err.println("Erro de criptografia de texto.");
             throw new RuntimeException(e);
         }
     }

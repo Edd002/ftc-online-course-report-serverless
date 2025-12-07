@@ -1,5 +1,6 @@
 package fiap.tech.challenge.online.course.report.serverless.config;
 
+import fiap.tech.challenge.online.course.report.serverless.util.EnvUtil;
 import software.amazon.awssdk.core.SdkBytes;
 import software.amazon.awssdk.http.apache.ApacheHttpClient;
 import software.amazon.awssdk.regions.Region;
@@ -18,12 +19,12 @@ public class KMSConfig {
         EncryptResponse encryptResponse;
         byte[] base64EncodedValue;
         try (KmsClient kmsClient = KmsClient.builder().httpClient(ApacheHttpClient.builder().maxConnections(100).socketTimeout(Duration.ofSeconds(60)).connectionTimeout(Duration.ofSeconds(60)).build()).region(Region.US_EAST_2).build()) {
-            EncryptRequest encryptRequest = EncryptRequest.builder().keyId("arn:aws:kms:us-east-2:045221533960:key/0b721003-b45e-4ebb-a5a5-973c1c386a87").plaintext(SdkBytes.fromUtf8String(plainText)).build();
+            EncryptRequest encryptRequest = EncryptRequest.builder().keyId(EnvUtil.getVar("AWS_KMS_KEY_ID")).plaintext(SdkBytes.fromUtf8String(plainText)).build();
             encryptResponse = kmsClient.encrypt(encryptRequest);
             SdkBytes cipherTextBytes = encryptResponse.ciphertextBlob();
             base64EncodedValue = Base64.getEncoder().encode(cipherTextBytes.asByteArray());
         } catch (Exception e) {
-            System.err.println("Erro de criptografia do texto: " + plainText);
+            System.err.println("Erro de criptografia de texto.");
             throw new RuntimeException(e);
         }
         return new String(base64EncodedValue);
@@ -33,7 +34,7 @@ public class KMSConfig {
         DecryptResponse decryptResponse;
         try (KmsClient kmsClient = KmsClient.builder().httpClient(ApacheHttpClient.builder().maxConnections(100).socketTimeout(Duration.ofSeconds(60)).connectionTimeout(Duration.ofSeconds(60)).build()).region(Region.US_EAST_2).build()) {
             byte[] ciphertextBlob = Base64.getDecoder().decode(encryptedText);
-            DecryptRequest decryptRequest = DecryptRequest.builder().keyId("arn:aws:kms:us-east-2:045221533960:key/0b721003-b45e-4ebb-a5a5-973c1c386a87").ciphertextBlob(SdkBytes.fromByteArray(ciphertextBlob)).build();
+            DecryptRequest decryptRequest = DecryptRequest.builder().keyId(EnvUtil.getVar("AWS_KMS_KEY_ID")).ciphertextBlob(SdkBytes.fromByteArray(ciphertextBlob)).build();
             decryptResponse = kmsClient.decrypt(decryptRequest);
         } catch (Exception e) {
             System.err.println("Erro de descriptografia do texto: " + encryptedText);
