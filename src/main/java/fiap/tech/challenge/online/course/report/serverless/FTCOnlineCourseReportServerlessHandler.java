@@ -6,6 +6,7 @@ import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import com.amazonaws.services.lambda.runtime.logging.LogLevel;
 import fiap.tech.challenge.online.course.report.serverless.config.CryptoConfig;
+import fiap.tech.challenge.online.course.report.serverless.config.KMSConfig;
 import fiap.tech.challenge.online.course.report.serverless.dao.FTCOnlineCourseReportServerlessDAO;
 import fiap.tech.challenge.online.course.report.serverless.email.FTCOnlineCourseReportEmailDeliverService;
 import fiap.tech.challenge.online.course.report.serverless.loader.ApplicationPropertiesLoader;
@@ -41,6 +42,8 @@ public class FTCOnlineCourseReportServerlessHandler implements RequestHandler<AP
     @Override
     public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent request, Context context) {
         try {
+            System.out.println("KMS Decrypt: " + new KMSConfig().decrypt(new KMSConfig().encrypt("ABC")));
+
             FeedbackReportRequest feedbackReportRequest = HttpObjectMapper.readValue(request.getBody(), FeedbackReportRequest.class);
             if (feedbackReportRequest == null) {
                 context.getLogger().log("Erro de conversão de payload de requisição.", LogLevel.ERROR);
