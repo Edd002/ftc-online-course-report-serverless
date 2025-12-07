@@ -4,7 +4,7 @@ import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import fiap.tech.challenge.online.course.report.serverless.payload.HttpObjectMapper;
 import fiap.tech.challenge.online.course.report.serverless.payload.record.FeedbackReportRequest;
-import mock.TestContext;
+import fiap.tech.challenge.online.course.report.serverless.mock.TestContext;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
