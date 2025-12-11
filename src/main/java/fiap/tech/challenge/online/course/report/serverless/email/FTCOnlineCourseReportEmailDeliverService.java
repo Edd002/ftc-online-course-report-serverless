@@ -1,6 +1,6 @@
 package fiap.tech.challenge.online.course.report.serverless.email;
 
-import fiap.tech.challenge.online.course.report.serverless.config.EmailConfig;
+import fiap.tech.challenge.online.course.report.serverless.properties.EmailProperties;
 import fiap.tech.challenge.online.course.report.serverless.payload.HttpObjectMapper;
 import fiap.tech.challenge.online.course.report.serverless.payload.record.FeedbackReportResponse;
 import fiap.tech.challenge.online.course.report.serverless.payload.record.mail.MailFromSendRequest;
@@ -22,20 +22,20 @@ import java.util.Properties;
 
 public class FTCOnlineCourseReportEmailDeliverService {
 
-    private final EmailConfig emailConfig;
+    private final EmailProperties emailProperties;
 
     public FTCOnlineCourseReportEmailDeliverService(Properties applicationProperties) {
-        emailConfig = new EmailConfig(applicationProperties);
+        emailProperties = new EmailProperties(applicationProperties);
     }
 
     public void sendEmailUrgentFeedbackByMailtrapAPI(FeedbackReportResponse feedbackReportResponse) {
         try (HttpClient client = HttpClient.newHttpClient()) {
-            final String EMAIL_API_URL = emailConfig.getMailtrapUrl();
-            final String EMAIL_API_TOKEN_KEY = emailConfig.getMailtrapPassword();
+            final String EMAIL_API_URL = emailProperties.getMailtrapUrl();
+            final String EMAIL_API_TOKEN_KEY = emailProperties.getMailtrapPassword();
 
             String requestBody = HttpObjectMapper.writeValueAsString(
                     new MailSendRequest(
-                            new MailFromSendRequest(emailConfig.getMailtrapSenderEmail(), "FTC Online Course Report"),
+                            new MailFromSendRequest(emailProperties.getMailtrapSenderEmail(), "FTC Online Course Report"),
                             Collections.singletonList(new MailToSendRequest(feedbackReportResponse.administratorEmail())),
                             "E-mail de notificação de feedback urgente do aluno",
                             buildEmailHtmlMessageBody(feedbackReportResponse),
@@ -59,22 +59,22 @@ public class FTCOnlineCourseReportEmailDeliverService {
         try {
             Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
             Properties props = new Properties();
-            props.setProperty("mail.smtp.host", emailConfig.getGmailHost());
-            props.setProperty("mail.smtp.port", emailConfig.getGmailPort());
-            props.setProperty("mail.smtp.auth", emailConfig.isGmailSmtpAuth());
-            props.setProperty("mail.smtp.starttls.enable", emailConfig.isGmailStarttlsEnable());
-            props.setProperty("mail.smtp.ssl.protocols", emailConfig.getGmailSslProtocol());
+            props.setProperty("mail.smtp.host", emailProperties.getGmailHost());
+            props.setProperty("mail.smtp.port", emailProperties.getGmailPort());
+            props.setProperty("mail.smtp.auth", emailProperties.isGmailSmtpAuth());
+            props.setProperty("mail.smtp.starttls.enable", emailProperties.isGmailStarttlsEnable());
+            props.setProperty("mail.smtp.ssl.protocols", emailProperties.getGmailSslProtocol());
 
             Session session = Session.getDefaultInstance(props,
                     new Authenticator() {
                         protected PasswordAuthentication getPasswordAuthentication() {
-                            return new PasswordAuthentication(emailConfig.getGmailUsername(), emailConfig.getGmailPassword());
+                            return new PasswordAuthentication(emailProperties.getGmailUsername(), emailProperties.getGmailPassword());
                         }
                     });
             session.setDebug(true);
 
             Message message = new MimeMessage(session);
-            message.setFrom(new InternetAddress(emailConfig.getGmailUsername(), "FTC Online Course Report"));
+            message.setFrom(new InternetAddress(emailProperties.getGmailUsername(), "FTC Online Course Report"));
             Address[] toUser = InternetAddress.parse(feedbackReportResponse.administratorEmail());
             message.setRecipients(Message.RecipientType.TO, toUser);
             message.setSubject("E-mail de notificação de feedback urgente do aluno");
