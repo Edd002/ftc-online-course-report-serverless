@@ -1,8 +1,8 @@
-package fiap.tech.challenge.online.course.report.serverless.config;
+package fiap.tech.challenge.online.course.report.serverless.properties;
 
 import java.util.Properties;
 
-public class EmailConfig {
+public class EmailProperties {
 
     private final String mailtrapUrl;
     private final String mailtrapPassword;
@@ -15,7 +15,7 @@ public class EmailConfig {
     private final boolean gmailStarttlsEnable;
     private final String gmailSslProtocol;
 
-    public EmailConfig(Properties applicationProperties) {
+    public EmailProperties(Properties applicationProperties) {
         this.mailtrapUrl = applicationProperties.getProperty("application.mailtrap.url");
         this.mailtrapPassword = applicationProperties.getProperty("application.mailtrap.password");
         this.mailtrapSenderEmail = applicationProperties.getProperty("application.mailtrap.sender.email");
