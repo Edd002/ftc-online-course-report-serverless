@@ -1,11 +1,11 @@
 package fiap.tech.challenge.online.course.report.serverless.email;
 
-import fiap.tech.challenge.online.course.report.serverless.properties.EmailProperties;
 import fiap.tech.challenge.online.course.report.serverless.payload.HttpObjectMapper;
 import fiap.tech.challenge.online.course.report.serverless.payload.record.FeedbackReportResponse;
 import fiap.tech.challenge.online.course.report.serverless.payload.record.mail.MailFromSendRequest;
 import fiap.tech.challenge.online.course.report.serverless.payload.record.mail.MailSendRequest;
 import fiap.tech.challenge.online.course.report.serverless.payload.record.mail.MailToSendRequest;
+import fiap.tech.challenge.online.course.report.serverless.properties.EmailProperties;
 
 import javax.activation.CommandMap;
 import javax.activation.MailcapCommandMap;
@@ -16,6 +16,8 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.Objects;
 import java.util.Properties;
@@ -92,7 +94,7 @@ public class FTCOnlineCourseReportEmailDeliverService {
 
     private String buildEmailHtmlMessageBody(FeedbackReportResponse feedbackReportResponse) {
         return "Segue o relatório de feedback urgente do aluno: " +
-                "<br><b>Data de registro do feedback:</b> " + feedbackReportResponse.createdIn() +
+                "<br><b>Data/hora de registro do feedback:</b> " + feedbackReportResponse.createdIn().toInstant().atZone(ZoneId.of("America/Sao_Paulo")).format(DateTimeFormatter.ofPattern("dd/MM/yyyy hh:mm").withZone(ZoneId.of("America/Sao_Paulo"))) +
                 "<br><b>Nome do administrador:</b> " + feedbackReportResponse.administradorName() +
                 "<br><b>E-mail do administrador:</b> " + feedbackReportResponse.administratorEmail() +
                 "<br><b>Nome do professor:</b> " + feedbackReportResponse.teacherName() +
