@@ -94,7 +94,7 @@ public class FTCOnlineCourseReportEmailDeliverService {
 
     private String buildEmailHtmlMessageBody(FeedbackReportResponse feedbackReportResponse) {
         return "Segue o relatório de feedback urgente do aluno: " +
-                "<br><b>Data/hora de registro do feedback:</b> " + feedbackReportResponse.createdIn().toInstant().atZone(ZoneId.of("America/Sao_Paulo")).format(DateTimeFormatter.ofPattern("dd/MM/yyyy hh:mm").withZone(ZoneId.of("America/Sao_Paulo"))) +
+                "<br><b>Data/hora de registro do feedback:</b> " + feedbackReportResponse.createdIn().toInstant().atZone(ZoneId.of("America/Sao_Paulo")).format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm").withZone(ZoneId.of("America/Sao_Paulo"))) +
                 "<br><b>Nome do administrador:</b> " + feedbackReportResponse.administradorName() +
                 "<br><b>E-mail do administrador:</b> " + feedbackReportResponse.administratorEmail() +
                 "<br><b>Nome do professor:</b> " + feedbackReportResponse.teacherName() +
