@@ -2,8 +2,7 @@ package fiap.tech.challenge.online.course.report.serverless;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
-import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
-import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
+import com.amazonaws.services.lambda.runtime.events.SQSEvent;
 import com.amazonaws.services.lambda.runtime.logging.LogLevel;
 import fiap.tech.challenge.online.course.report.serverless.config.KMSConfig;
 import fiap.tech.challenge.online.course.report.serverless.dao.FTCOnlineCourseReportServerlessDAO;
@@ -12,14 +11,12 @@ import fiap.tech.challenge.online.course.report.serverless.loader.ApplicationPro
 import fiap.tech.challenge.online.course.report.serverless.payload.HttpObjectMapper;
 import fiap.tech.challenge.online.course.report.serverless.payload.record.FeedbackReportRequest;
 import fiap.tech.challenge.online.course.report.serverless.payload.record.FeedbackReportResponse;
-import fiap.tech.challenge.online.course.report.serverless.payload.record.error.ErrorResponse;
-import fiap.tech.challenge.online.course.report.serverless.payload.record.error.InvalidParameterErrorResponse;
 
 import java.security.InvalidParameterException;
 import java.util.Arrays;
 import java.util.Properties;
 
-public class FTCOnlineCourseReportServerlessHandler implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
+public class FTCOnlineCourseReportServerlessHandler implements RequestHandler<SQSEvent, Void> {
 
     private static final KMSConfig kmsConfig;
     private static final Properties applicationProperties;
@@ -39,26 +36,27 @@ public class FTCOnlineCourseReportServerlessHandler implements RequestHandler<AP
     }
 
     @Override
-    public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent request, Context context) {
+    public Void handleRequest(SQSEvent event, Context context) {
         try {
-            FeedbackReportRequest feedbackReportRequest = HttpObjectMapper.readValue(request.getBody(), FeedbackReportRequest.class);
+            FeedbackReportRequest feedbackReportRequest = retrieveSQSMessageBody(event);
             if (feedbackReportRequest == null) {
                 context.getLogger().log("Erro de conversão de payload de requisição.", LogLevel.ERROR);
-                return buildInvalidParameterErrorResponse(new InvalidParameterException("O payload para envio de e-mail de feedback urgente não foi informado corretamente."));
+                throw new InvalidParameterException("O payload para envio de e-mail de feedback urgente não foi informado corretamente.");
             }
             context.getLogger().log("Requisição recebida em FTC Online Course Report - hashIdFeedback: " + feedbackReportRequest.hashIdFeedback(), LogLevel.INFO);
             validateAPIGatewayProxyRequestEvent(feedbackReportRequest);
             FeedbackReportResponse feedbackReportResponse = ftcOnlineCourseReportServerlessDAO.getFeedbackReportByHashId(feedbackReportRequest);
             ftcOnlineCourseReportEmailDeliverService.sendEmailUrgentFeedbackByGmailSMTP(feedbackReportResponse);
             ftcOnlineCourseReportServerlessDAO.registerFeedbackReport(feedbackReportRequest, feedbackReportResponse);
-            return new APIGatewayProxyResponseEvent().withStatusCode(201).withIsBase64Encoded(false);
-        } catch (InvalidParameterException e) {
-            context.getLogger().log("Message: " + e.getMessage() + " - Cause: " + e.getCause() + " - Stacktrace: " + Arrays.toString(e.getStackTrace()), LogLevel.ERROR);
-            return buildInvalidParameterErrorResponse(e);
+            return null;
         } catch (Exception e) {
             context.getLogger().log("Message: " + e.getMessage() + " - Cause: " + e.getCause() + " - Stacktrace: " + Arrays.toString(e.getStackTrace()), LogLevel.ERROR);
-            return buildErrorResponse(e);
+            throw new RuntimeException(e);
         }
+    }
+
+    private FeedbackReportRequest retrieveSQSMessageBody(SQSEvent event) {
+        return event.getRecords().stream().findFirst().map(message -> HttpObjectMapper.readValue(message.getBody(), FeedbackReportRequest.class)).orElse(null);
     }
 
     private void validateAPIGatewayProxyRequestEvent(FeedbackReportRequest feedbackReportRequest) {
@@ -69,13 +67,5 @@ public class FTCOnlineCourseReportServerlessHandler implements RequestHandler<AP
         } catch (Exception e) {
             throw new InvalidParameterException(e.getMessage());
         }
-    }
-
-    private APIGatewayProxyResponseEvent buildInvalidParameterErrorResponse(InvalidParameterException e) {
-        return new APIGatewayProxyResponseEvent().withStatusCode(400).withBody(HttpObjectMapper.writeValueAsString(new InvalidParameterErrorResponse(e.getMessage(), e.getCause() != null ? e.getCause().toString() : null))).withIsBase64Encoded(false);
-    }
-
-    private APIGatewayProxyResponseEvent buildErrorResponse(Exception e) {
-        return new APIGatewayProxyResponseEvent().withStatusCode(500).withBody(HttpObjectMapper.writeValueAsString(new ErrorResponse(e.getMessage(), e.getCause() != null ? e.getCause().toString() : null))).withIsBase64Encoded(false);
     }
 }
