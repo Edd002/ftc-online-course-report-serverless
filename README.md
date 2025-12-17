@@ -21,6 +21,7 @@ Este sistema foi desenvolvido utilizando Java 21 e PostgreSQL 17.4.
 ### Tecnologias Utilizadas
 - **Java 21** como linguagem de programação da aplicação
 - **PostgreSQL** como banco de dados relacional
+- **JDBC** para integrar a aplicação com o banco de dados
 - **AWS Lambda** para definição da estrutura serverless
 - **AWS KMS** para criptografia das variáveis de ambiente
 - **Jackson** para conversão de estrutura de dados (serializar e desserializar)
