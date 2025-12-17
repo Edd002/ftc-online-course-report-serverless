@@ -1,6 +1,6 @@
 # ftc-online-course-report-serverless
 
-Projeto Tech Challenge Online Course Report Serverless do Curso de Pós-Graduação Lato Sensu Arquitetura e Desenvolvimento em JAVA da Faculdade de Informática e Administração Paulista (FIAP). Aplicação Serverless responsável por receber mensagem identificando o feedback urgente para que possa ser enviado ao administrador.
+Projeto Tech Challenge Online Course Report Serverless do Curso de Pós-Graduação Lato Sensu Arquitetura e Desenvolvimento em JAVA da Faculdade de Informática e Administração Paulista (FIAP). Aplicação Serverless responsável por receber mensagem SQS identificando o feedback urgente para que possa ser enviado ao administrador.
 
 ## Diagrama de Arquitetura
 
