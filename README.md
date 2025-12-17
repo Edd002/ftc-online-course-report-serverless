@@ -1,6 +1,6 @@
 # ftc-online-course-report-serverless
 
-Projeto Tech Challenge Online Course Report Serverless do Curso de Pós-Graduação Lato Sensu Arquitetura e Desenvolvimento em JAVA da Faculdade de Informática e Administração Paulista (FIAP). Aplicação Serverless responsável por receber mensagem SQS identificando o feedback urgente para que possa ser enviado ao administrador.
+Projeto Tech Challenge Online Course Report Serverless do Curso de Pós-Graduação Lato Sensu Arquitetura e Desenvolvimento em JAVA da Faculdade de Informática e Administração Paulista (FIAP). Aplicação Serverless responsável por receber mensagem SQS identificando o feedback para que possa ser enviado um e-mail ao administrador.
 
 ## Diagrama de Arquitetura
 
@@ -23,6 +23,7 @@ Este sistema foi desenvolvido utilizando Java 21 e PostgreSQL 17.4.
 - **PostgreSQL** como banco de dados relacional
 - **JDBC** para integrar a aplicação com o banco de dados
 - **AWS Lambda** para definição da estrutura serverless
+- **AWS SQS** para atuar como consumidor
 - **AWS KMS** para criptografia das variáveis de ambiente
 - **Jackson** para conversão de estrutura de dados (serializar e desserializar)
 - **Javax Mail** para envio de e-mail
